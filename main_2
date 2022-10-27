@@ -1,0 +1,214 @@
+//Jakub Mazur
+#include <iostream>
+using namespace std;
+
+int inline get(int** a, int x, int y){
+    return *(*(a + x) + y);
+}
+
+void inline set(int** a, int x, int y, int val){
+    *(*(a + x) + y) = val;
+}
+
+int** GenerateBoard(int M){
+    int** plansza = (int**) calloc(M, sizeof(int*));
+    for (int i = 0; i < M; ++i) {
+        *(plansza + i) = (int *) calloc(M, sizeof(int));
+    }
+    return plansza;
+}
+
+void printBoard(int **plansza, int M) {
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < M; ++j) {
+            cout << get(plansza, i, j) << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int M;
+    cin >> M;
+    int** plansza = GenerateBoard(M);
+
+    char command;
+    while (true) {
+        cin >> command;
+        if (command == 'K') {
+            int s = 0;
+            for (int i = 0; i < M; ++i) {
+                for (int j = 0; j < M; ++j) {
+                    s += get(plansza, i, j);
+                }
+            }
+            cout << s << endl;
+            return 0;
+        }
+        if (command == 'N') {
+            int x, y, val;
+            cin >> x >> y >> val;
+            set(plansza, x, y, val);
+        }
+        if (command == 'C') {
+            int val;
+            cin >> M;
+            plansza = GenerateBoard(M);
+            for (int i = 0; i < M; ++i) {
+                for (int j = 0; j < M; ++j) {
+                    cin >> val;
+                    set(plansza, i, j, val);
+                }
+            }
+        }
+        if (command == 'W') {
+            for (int i = 0; i < M; ++i) {
+                for (int j = 0; j < M; ++j) {
+                    cout << get(plansza, i, j) << " ";
+                }
+                cout << endl;
+            }
+        }
+        if (command == 'S') {
+            int s = 0;
+            for (int i = 0; i < M; ++i) {
+                for (int j = 0; j < M; ++j) {
+                    s += get(plansza, i, j);
+                }
+            }
+            cout << s << endl;
+        }
+        if (command == 'L') {
+            int g, gprev;
+            bool changed = true;
+            while (changed) {
+                changed = false;
+                for (int i = 0; i < M; ++i) {
+                    for (int j = 0; j < M - 1; ++j) {
+                        g = get(plansza, i, j);
+                        if (g != 0) continue;
+                        for (int k = j + 1; k < M; ++k) {
+                            g = get(plansza, i, k);
+                            if (g == 0) continue;
+                            set(plansza, i, j, g);
+                            set(plansza, i, k, 0);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    g = get(plansza, i, 0);
+                    for (int j = 1; j < M; ++j) {
+                        gprev = g; g = get(plansza, i, j);
+                        if (gprev == 0) continue;
+                        if (g == 0) continue;
+                        if (g != gprev) continue;
+                        set(plansza, i, j-1, g * 2);
+                        set(plansza, i, j, 0);
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (command == 'G') {
+            int g, gprev;
+            bool changed = true;
+            while (changed) {
+                changed = false;
+                for (int i = 0; i < M; ++i) {
+                    for (int j = 0; j < M - 1; ++j) {
+                        g = get(plansza, j, i);
+                        if (g != 0) continue;
+                        for (int k = j + 1; k < M; ++k) {
+                            g = get(plansza, k, i);
+                            if (g == 0) continue;
+                            set(plansza, j, i, g);
+                            set(plansza, k, i, 0);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    g = get(plansza, 0, i);
+                    for (int j = 1; j < M; ++j) {
+                        gprev = g; g = get(plansza, j, i);
+                        if (gprev == 0) continue;
+                        if (g == 0) continue;
+                        if (g != gprev) continue;
+                        set(plansza, j-1, i, g * 2);
+                        set(plansza, j, i, 0);
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (command == 'D') {
+            int g, gprev;
+            bool changed = true;
+            while (changed) {
+                changed = false;
+                for (int i = 0; i < M; ++i) {
+                    for (int j = M - 1; j >= 1; --j) {
+                        g = get(plansza, j, i);
+                        if (g != 0) continue;
+                        for (int k = j - 1; k >= 0; --k) {
+                            g = get(plansza, k, i);
+                            if (g == 0) continue;
+                            set(plansza, j, i, g);
+                            set(plansza, k, i, 0);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    g = get(plansza, M - 1, i);
+                    for (int j = M - 2; j >= 0; --j) {
+                        gprev = g; g = get(plansza, j, i);
+                        if (gprev == 0) continue;
+                        if (g == 0) continue;
+                        if (g != gprev) continue;
+                        set(plansza, j + 1, i, g * 2);
+                        set(plansza, j, i, 0);
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (command == 'P') {
+            int g, gprev;
+            bool changed = true;
+            while (changed) {
+                changed = false;
+                for (int i = 0; i < M; ++i) {
+                    for (int j = M - 1; j >= 1; --j) {
+                        g = get(plansza, i, j);
+                        if (g != 0) continue;
+                        for (int k = j - 1; k >= 0; --k) {
+                            g = get(plansza, i, k);
+                            if (g == 0) continue;
+                            set(plansza, i, j, g);
+                            set(plansza, i, k, 0);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    g = get(plansza, i, M - 1);
+                    for (int j = M - 2; j >= 0; --j) {
+                        gprev = g; g = get(plansza, i, j);
+                        if (gprev == 0) continue;
+                        if (g == 0) continue;
+                        if (g != gprev) continue;
+                        set(plansza, i, j, 2 * g);
+                        set(plansza, i, j + 1, 0);
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
