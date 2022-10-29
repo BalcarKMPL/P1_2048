@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-#./cmake-build-debug/P1_2048 < test_K_1 > tout_K_1
-#diff -s out_K_1 tout_K_1
-for f in *; 
-    do echo $f; 
+echo "" > report
+for f in test*; 
+do 
+    ./cmake-build-debug/P1_2048 < $f > "real_$f"
+    echo $f
+    diff -s "des_$f" "real_$f" >> report 2 >> report
 done
+
+cat report
+
+ 
